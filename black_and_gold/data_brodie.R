@@ -1,4 +1,5 @@
 library(readstata13)
+library(wesanderson)
 library(tidyverse)
 library(reshape2)
 library(stringr)
@@ -273,8 +274,8 @@ data %>% filter(unitid == '126614', ugftptfreshwh != 0) %>% ggplot(aes(x = endye
   geom_line(aes(y = ugftptfreshap_pct, color = 'Asian/pacific islander')) +
   xlab('Academic endyear') + ylab('Percent of freshmen by race') +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  scale_color_discrete(name = 'Race/Ethnicity') +
-  ggtitle('Racial Composition of Freshmen at CU Boulder')
+  scale_color_manual(name = 'Race/Ethnicity', values = wes_palette('Moonrise1', n = 4)) +
+  ggtitle('The Black and Gold Project: Racial Composition of Freshmen at CU Boulder')
 dev.off()
 
 # Compare CU Boulder to state/combined statistical area
@@ -285,8 +286,8 @@ data %>% filter(unitid == '126614', !is.na(state_pop_1824)) %>% ggplot(aes(x = e
   geom_line(aes(y = cntypop4_black_nh_1824_pct, color = '18-24 yo in Denver-Aurora')) +
   xlab('Academic endyear') + ylab('Percent of black population') +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  scale_color_discrete(name = 'Population') +
-  ggtitle('CU Boulder vs. CO vs. Denver-Aurora Area')
+  scale_color_manual(name = 'Population', values = wes_palette('Moonrise1', n = 3)) +
+  ggtitle('The Black and Gold Project: CU Boulder vs. CO vs. Denver-Aurora Area')
 dev.off()
 
 # Compare CU Boulder to peer universities (other pub-4yr's in CO)
@@ -298,6 +299,6 @@ data %>% filter(unitid %in% co_4yrs$unitid, ugftptfreshwh != 0) %>% ggplot(aes(x
   scale_linetype_manual(values = c(rep('dotted', 3), 'solid', rep('dotted', 9)), guide = FALSE) +
   xlab('Academic endyear') + ylab('Percent of black freshmen') +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  scale_color_discrete(name = 'University', labels = co_4yrs$instname) +
-  ggtitle('CU Boulder vs. Other Public 4yrs in CO')
+  scale_color_manual(name = 'University', labels = co_4yrs$instname, values = wes_palette('Moonrise1', n = 13, 'continuous')) +
+  ggtitle('The Black and Gold Project: CU Boulder vs. Other Public 4yrs in CO')
 dev.off()
