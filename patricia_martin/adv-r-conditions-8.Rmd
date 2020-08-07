@@ -112,13 +112,34 @@ h <- function() stop("This is an error!")
 f()
 ```
 
+Example
+```{r}
+name <- function(x) {
+  print(x)
+  if(is.numeric(x)) {
+    stop("Name must be a string")
+  }
+}
+
+name("Maria")
+name(123)
+```
+
 By default, the error message includes the call, but this is typically not useful (and recapitulates information that you can easily get from `traceback()`), so I think it's good practice to use `call. = FALSE`[^trailing-dot]:
 
 [^trailing-dot]: The trailing `.` in `call.` is a peculiarity of `stop()`; don't read anything into it.
 
 ```{r, error = TRUE}
-h <- function() stop("This is an error!", call. = FALSE)
-f()
+name <- function(x = NULL) {
+  print(x)
+  if(is.numeric(x)) {
+    stop("Name must be a string", call. = FALSE)
+  }
+}
+
+name()
+name("Maria")
+name(123)
 ```
 
 The rlang equivalent to `stop()`, `rlang::abort()`, does this automatically. We'll use `abort()` throughout this chapter, but we won't get to its most compelling feature, the ability to add additional metadata to the condition object, until we're near the end of the chapter.
@@ -219,6 +240,16 @@ fm <- function() {
 fm()
 ```
 
+Example
+```{r}
+lastname <- function(x) {
+  print(x)
+  message("Don't forget hyphens")
+}
+
+lastname("Martin Varela")
+```
+
 Good places to use a message are:
 
 * When a default argument requires some non-trivial amount of computation
@@ -257,9 +288,31 @@ However, the _purposes_ of `cat()` and `message()` are different. Use `cat()` wh
 
 1.  Write a wrapper around `file.remove()` that throws an error if the file
     to be deleted does not exist.
+```{r}
+rv <- function(doc) {
+  if(!file.exists(doc)) {
+    stop("File does not exist")
+    }
+  
+  file.remove(doc)
+  
+}
+
+rv("../../../folder/blank.doc")
+rv("../../../folder/fake.doc")
+
+```
+    
    
 1.  What does the `appendLF` argument to `message()` do? How is it related to
     `cat()`?
+    
+```{r}
+message("Hey", " you", " what's up?", appendLF = T)
+cat("Hey","you")
+```
+    
+ANSWER: `appendLF` appends two or more character strings together similar to the `cat()` function.
 
 ## Ignoring conditions 
 \index{conditions!muffling}
@@ -359,6 +412,7 @@ withCallingHandlers(
 )
 ```
 
+
 They differ in the type of handlers that they create:
 
 *  `tryCatch()` defines __exiting__ handlers; after the condition is handled, 
@@ -381,6 +435,17 @@ So far we've just signalled conditions, and not looked at the objects that are c
 ```{r}
 cnd <- catch_cnd(stop("An error"))
 str(cnd)
+```
+
+```{r}
+m1 <- catch_cnd(stop("This is an error message"))
+
+str(m1)
+
+#Not able to assign error message
+m2 <- stop("This is error message 2")
+
+str(m2)
 ```
 
 Built-in conditions are lists with two elements: 
@@ -426,6 +491,7 @@ tryCatch(
   {
     message("Hi!")
     1 + 1
+    2 + 3
   }
 )
 ```
@@ -648,6 +714,13 @@ tryCatch(f(), message = function(cnd) lobstr::cst())
     ```
 
 1.  Read the source code for `catch_cnd()` and explain how it works.
+```{r}
+?catch_cnd
+catch_cnd(10)
+catch_cnd(stop("stop!"))
+catch_cnd(message("This is a message"))
+```
+
 
 1.  How could you rewrite `show_condition()` to use a single handler?
 
